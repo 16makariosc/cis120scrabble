@@ -9,10 +9,10 @@ public class ControlsGUI extends JPanel {
     private Tile[] inventory = new Tile[7];
     private Square[] inventorygui = new Square[7];
 
-    public ControlsGUI() {
+    public ControlsGUI(Bag bag) {
 
         for (int i = 0; i < 7; i++) {
-            addTile(new Tile('a', 0));
+            addTile(new Tile(bag.getNextTile(), 0));
         }
     }
 

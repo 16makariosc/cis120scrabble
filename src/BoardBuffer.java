@@ -18,7 +18,7 @@ public class BoardBuffer {
     }
 
     public void removeLetter(Point pos) {
-        board[pos.x][pos.y] = new Tile('0', 0);
+        board[pos.x][pos.y] = new Tile(null, 0);
         newPositions.remove(pos);
     }
 
