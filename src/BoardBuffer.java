@@ -18,7 +18,7 @@ public class BoardBuffer {
     }
 
     public void removeLetter(Point pos) {
-        board[pos.x][pos.y] = new Tile(null, 0);
+        board[pos.x][pos.y] = new Tile('0', 0);
         newPositions.remove(pos);
     }
 
@@ -158,6 +158,10 @@ public class BoardBuffer {
             score += board[pt.x][pt.y].getPointVal();
         }
         return score;
+    }
+    
+    public Tile getTileAtPoint(Point p){
+        return board[p.x][p.y];
     }
 
     public Tile[][] getBoardState() {

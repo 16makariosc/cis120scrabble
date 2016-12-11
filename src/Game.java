@@ -18,10 +18,16 @@ public class Game implements Runnable {
 
     private BoardState boardState;
     private BoardBuffer boardBuffer;
+
+    
     private Board board = new Board();
+    private ControlsGUI controlsgui;
+    
     private Mode mode = Mode.DEFAULT;
     private Tile currentWorkingTile = new Tile('a', 5);
-    private Map<Character, BufferedImage> charToSquareMap = new HashMap<Character, BufferedImage>();
+    private int currentWorkingTileIndex = 0;
+    
+    public static Map<Character, BufferedImage> charToSquareMap = new HashMap<Character, BufferedImage>();
 
     public Game() {
         boardState = new BoardState();
@@ -33,19 +39,29 @@ public class Game implements Runnable {
 //            for (char alphabet = 'a'; alphabet <= 'z'; alphabet ++){
 //                charToSquareMap.put(alphabet, ImageIO.read(new File("resources/lettertiles/" + alphabet + ".png")));
 //            }
+            charToSquareMap.put('0', ImageIO.read(new File("resources/lettertiles/spacer.png")));
         } catch (IOException e){
             System.out.println("IOException when loading letterTiles");
         }
+        addTileToBoard(currentWorkingTile, new Point(4, 5));
+        addTileToBoard(currentWorkingTile, new Point(0, 0));
+        addTileToBoard(currentWorkingTile, new Point(5, 5));
+        addTileToBoard(currentWorkingTile, new Point(7, 7));
         
     }
 
     public void run() {
+        
         final JFrame frame = new JFrame("Scrabble");
         frame.setLocation(300, 300);
 
         // Main playing area
         board.addMouseListener(new BoardMouse());
         frame.add(board, BorderLayout.CENTER);
+        
+        controlsgui = new ControlsGUI();
+        controlsgui.addMouseListener(new InventoryMouse());
+        frame.add(controlsgui, BorderLayout.SOUTH);
         
         // Put the frame on the screen
         frame.pack();
@@ -73,6 +89,7 @@ public class Game implements Runnable {
     }
     
     private void removeTileFromBoard(Point pt){
+        controlsgui.addTile(boardBuffer.getTileAtPoint(pt));
         boardBuffer.removeLetter(pt);
         board.paintSquareToDefault(pt);
     }
@@ -100,6 +117,8 @@ public class Game implements Runnable {
                         && !boardBuffer.getBoardState()[p.x][p.y].isFixed()) {
                     addTileToBoard(currentWorkingTile, p);
                 }
+                controlsgui.removeTile(currentWorkingTileIndex);
+                currentWorkingTile = new Tile('0', 0);
                 mode = Mode.DEFAULT;
                 System.out.println("Clicked square at (" + p.x + "," + p.y + ")");
                 break;
@@ -108,5 +127,35 @@ public class Game implements Runnable {
 
         }
 
+    }
+    
+    private class InventoryMouse extends MouseAdapter implements MouseListener {
+        
+        private Point p;
+        
+        @Override
+        public void mouseClicked(MouseEvent arg0) {
+            Point p = arg0.getPoint();
+            p.x = p.x / (Square.WIDTH);
+            p.y = p.y / (Square.HEIGHT);
+            
+            switch (mode) {
+            case DEFAULT:
+                currentWorkingTile = new Tile(controlsgui.getLetterOfTile(p.x), 0);
+                currentWorkingTileIndex = p.x;
+                mode = Mode.PLACETILE;
+                System.out.println(controlsgui.getLetterOfTile(p.x));
+                System.out.println("Clicked square at (" + p.x + "," + p.y + ")");
+                break;
+            case PLACETILE:
+                currentWorkingTile = new Tile(controlsgui.getLetterOfTile(p.x), 0);
+                currentWorkingTileIndex = p.x;
+                mode = Mode.PLACETILE;
+                System.out.println("Clicked square at (" + p.x + "," + p.y + ")");
+                break;
+            }
+            
+        }
+        
     }
 }

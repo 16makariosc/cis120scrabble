@@ -3,6 +3,7 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -24,8 +25,8 @@ public class Board extends JPanel {
 
     private static final Point[] tripleLettLocations = { new Point(5, 1), new Point(9, 1),
             new Point(1, 5), new Point(5, 5), new Point(9, 5), new Point(13, 5), new Point(1, 9),
-            new Point(5, 9), new Point(9, 9), new Point(13, 9), new Point(5, 12),
-            new Point(9, 12) };
+            new Point(5, 9), new Point(9, 9), new Point(13, 9), new Point(5, 13),
+            new Point(9, 13) };
 
     private static final Point[] doubleWordLocations = { new Point(1, 1), new Point(2, 2),
             new Point(3, 3), new Point(4, 4), new Point(10, 10), new Point(11, 11),
@@ -41,7 +42,6 @@ public class Board extends JPanel {
             new Point(8, 12), new Point(3, 14), new Point(11, 14) };
 
     private Point[] starLocations = { new Point(7, 7) };
-
     private Square[][] board = new Square[15][15];
 
     public Board() {
@@ -84,8 +84,10 @@ public class Board extends JPanel {
             board[pt.x][pt.y] = new Square(new Point(pt.x, pt.y), doubleLettTile);
         }
 
-        // shine like a star
-        board[7][7] = new Square(new Point(7, 7), starTile);
+        // shine like a star (I know this is only one point but consistancy)
+        for (Point pt : starLocations) {
+            board[pt.x][pt.y] = new Square(new Point(pt.x, pt.y), starTile);
+        }
 
     }
 
@@ -94,7 +96,20 @@ public class Board extends JPanel {
         repaint();
     }
 
-    public void paintSquareToDefault(Point pos) {
+    public void paintSquareToDefault(Point pt) {
+        if (Arrays.asList(tripleWordLocations).contains(pt)){
+            board[pt.x][pt.y] = new Square(new Point(pt.x, pt.y), tripleWordTile);
+        } else if (Arrays.asList(doubleWordLocations).contains(pt)){
+            board[pt.x][pt.y] = new Square(new Point(pt.x, pt.y), doubleWordTile);
+        } else if (Arrays.asList(tripleLettLocations).contains(pt)){
+            board[pt.x][pt.y] = new Square(new Point(pt.x, pt.y), tripleLettTile);
+        } else if (Arrays.asList(doubleLettLocations).contains(pt)){
+            board[pt.x][pt.y] = new Square(new Point(pt.x, pt.y), doubleLettTile);
+        } else if (Arrays.asList(starLocations).contains(pt)){
+            board[pt.x][pt.y] = new Square(new Point(pt.x, pt.y), starTile);
+        } else {
+            board[pt.x][pt.y] = new Square(new Point(pt.x, pt.y), normalWordTile);
+        }
         repaint();
     }
 
