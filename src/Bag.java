@@ -32,7 +32,6 @@ public class Bag {
         } finally {
             tileReader.close();
         }
-        System.out.println(bag);
     }
 
     public Character getNextTile() {

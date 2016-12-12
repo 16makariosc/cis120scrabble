@@ -32,7 +32,7 @@ public class Board extends JPanel {
             new Point(3, 3), new Point(4, 4), new Point(10, 10), new Point(11, 11),
             new Point(12, 12), new Point(13, 13), new Point(13, 1), new Point(12, 2),
             new Point(11, 3), new Point(10, 4), new Point(3, 11), new Point(2, 12),
-            new Point(1, 13) };
+            new Point(1, 13), new Point(4, 10) };
 
     private static final Point[] doubleLettLocations = { new Point(3, 0), new Point(11, 0),
             new Point(6, 2), new Point(8, 2), new Point(0, 3), new Point(7, 3), new Point(14, 3),

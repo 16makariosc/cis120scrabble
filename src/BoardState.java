@@ -18,5 +18,9 @@ public class BoardState{
     public Tile[][] getBoardstate(){
         return board;
     }
+    
+    public void update(Tile[][] newState){
+        board = newState;
+    }
 
 }

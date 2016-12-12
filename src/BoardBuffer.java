@@ -1,7 +1,7 @@
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.Set;
 
 public class BoardBuffer {
 
@@ -22,7 +22,7 @@ public class BoardBuffer {
         newPositions.remove(pos);
     }
 
-    public boolean isValidWord(HashSet<String> dict) { // spellchecker
+    public boolean isValidWord(Set<String> dict) { // spellchecker
 
         if (dict.contains(currentWord())) {
             return true;
@@ -31,24 +31,27 @@ public class BoardBuffer {
 
     }
 
-    private String currentWord() {
+    public String currentWord() {
 
         String word = "";
 
-        if (posAreInLine()) {
-            if (isConstant(getYVals())) {
-                int y = getYVals().get(0);
-                for (int x : getXVals()) {
-                    word += board[x][y].getLetter();
-                }
-                return word;
-            } else if (isConstant(getXVals())) {
-                int x = getYVals().get(0);
-                for (int y : getYVals()) {
-                    word += board[x][y].getLetter();
-                }
-                return word;
+        if (isConstant(getYVals())) {
+            int y = getYVals().get(0);
+            for (int x = Collections.min(getXVals()); board[x][y].getLetter() != null; x++) {
+                word += board[x][y].getLetter();
             }
+
+            return word;
+        }
+        if (isConstant(getXVals())) {
+            int x = getXVals().get(0);
+            for (int y = Collections.min(getYVals()); board[x][y].getLetter() != null; y++) {
+                word += board[x][y].getLetter();
+            }
+            // for (int y : getYVals()) {
+            // word += board[x][y].getLetter();
+            // }
+            return word;
         }
         return word;
 
@@ -57,15 +60,13 @@ public class BoardBuffer {
     public boolean checkIfValidBoardState() {
 
         if (posAreInLine()) {
-
             for (Point pos : newPositions) {
-                if (!isTouchingValidTile(pos)) {
-                    return false;
+                if ((pos.x == 7 && pos.y == 7) || isTouchingValidTile(pos)) {
+                    return true;
                 }
             }
-
         }
-        return true;
+        return false;
 
     }
 
@@ -77,23 +78,19 @@ public class BoardBuffer {
         Collections.sort(xvals);
         Collections.sort(yvals);
 
-        if (isConstant(xvals) == false && isConstant(yvals) == false) {
+        if (!isConstant(xvals) && !isConstant(yvals)) {
             return false;
-        } else if (isConstant(xvals) == false && isConstant(yvals) == true) {
-            if (!isAscending(xvals)) {
-                return false;
-            }
-        } else if (isConstant(xvals) == true && isConstant(yvals) == false) {
-            if (!isAscending(yvals)) {
-                return false;
-            }
+        } else if (!isConstant(xvals) && isConstant(yvals)) {
+            return isAscending(xvals);
+        } else if (isConstant(xvals) && !isConstant(yvals)) {
+            return isAscending(yvals);
         }
 
         return true;
 
     }
 
-    private ArrayList<Integer> getXVals() {
+    public ArrayList<Integer> getXVals() {
         ArrayList<Integer> xvals = new ArrayList<Integer>();
         for (Point pos : newPositions) {
             xvals.add(pos.x);
@@ -101,22 +98,26 @@ public class BoardBuffer {
         return xvals;
     }
 
-    private ArrayList<Integer> getYVals() {
+    public ArrayList<Integer> getYVals() {
         ArrayList<Integer> yvals = new ArrayList<Integer>();
         for (Point pos : newPositions) {
-            yvals.add(pos.x);
+            yvals.add(pos.y);
         }
         return yvals;
     }
 
     private boolean isConstant(ArrayList<Integer> ints) {
-        int first = ints.get(0);
-        for (int num : ints) {
-            if (num != first) {
-                return false;
+        try {
+            int first = ints.get(0);
+            for (int num : ints) {
+                if (num != first) {
+                    return false;
+                }
             }
+            return true;
+        } catch (Exception e) {
+            return false;
         }
-        return true;
     }
 
     private boolean isAscending(ArrayList<Integer> ints) {
@@ -154,22 +155,73 @@ public class BoardBuffer {
 
     public int getScoreOnBoard() {
         int score = 0;
-        for (Point pt : newPositions) {
-            score += board[pt.x][pt.y].getPointVal();
+
+        if (isConstant(getYVals())) {
+
+            int y = getYVals().get(0);
+            int minx = Collections.min(getXVals());
+
+            while (board[minx][y].getLetter() != null) {
+                minx--;
+            }
+
+            for (int x = minx + 1; board[x][y].getLetter() != null; x++) {
+                score += board[x][y].getPointVal();
+                if (board[x][y - 1].getLetter() != null || board[x][y + 1].getLetter() != null) {
+
+                    int miny = y;
+
+                    while (board[x][miny].getLetter() != null) {
+                        miny--;
+                    }
+
+                    for (int miny1 = miny + 1; board[x][miny1].getLetter() != null; miny1++) {
+                        score += board[x][miny1].getPointVal();
+                    }
+                }
+            }
+
+            return score;
+
+        } else if (isConstant(getXVals())) {
+            int x = getXVals().get(0);
+            int miny = Collections.min(getYVals());
+
+            while (board[x][miny].getLetter() != null) {
+                miny--;
+            }
+
+            for (int y = miny + 1; board[x][y].getLetter() != null; y++) {
+                score += board[x][y].getPointVal();
+                if (board[x - 1][y].getLetter() != null || board[x + 1][y].getLetter() != null) {
+
+                    int minx = x;
+
+                    while (board[minx][y].getLetter() != null) {
+                        minx--;
+                    }
+
+                    for (int minx1 = minx + 1; board[minx1][y].getLetter() != null; minx1++) {
+                        score += board[minx1][y].getPointVal();
+                    }
+                }
+            }
+
+            return score;
         }
         return score;
     }
-    
-    public Tile getTileAtPoint(Point p){
+
+    public Tile getTileAtPoint(Point p) {
         return board[p.x][p.y];
     }
 
     public Tile[][] getBoardState() {
         return board;
     }
-    
-    public Tile[][] endTurn(){
-        for (Point pt : newPositions){
+
+    public Tile[][] endTurn() {
+        for (Point pt : newPositions) {
             board[pt.x][pt.y].fix();
         }
         return getBoardState();

@@ -4,21 +4,26 @@ import java.util.ArrayList;
 
 import javax.swing.JPanel;
 
-public class ControlsGUI extends JPanel {
+public class Inventory extends JPanel {
 
     private Tile[] inventory = new Tile[7];
     private Square[] inventorygui = new Square[7];
+    private int score = 0;
+    private final String name;
 
-    public ControlsGUI(Bag bag) {
+    public Inventory(Bag bag, String name) {
+
+        this.name = name;
 
         for (int i = 0; i < 7; i++) {
-            addTile(new Tile(bag.getNextTile(), 0));
+            char c = bag.getNextTile();
+            addTile(new Tile(c, Game.charToPointMap.get(c)));
         }
     }
 
     public void addTile(Tile tile) {
-        for (int i = 0; i < 7; i++){
-            if (inventory[i] == null){
+        for (int i = 0; i < 7; i++) {
+            if (inventory[i] == null) {
                 System.out.println(i);
                 inventory[i] = tile;
                 inventorygui[i] = new Square(new Point(i, 0),
@@ -37,6 +42,27 @@ public class ControlsGUI extends JPanel {
 
     public Character getLetterOfTile(int index) {
         return inventory[index].getLetter();
+    }
+
+    public void refillInventory(Bag bag) {
+        for (int i = 0; i < 7; i++) {
+            if (inventory[i] == null) {
+                char c = bag.getNextTile();
+                addTile(new Tile(c, Game.charToPointMap.get(c)));
+            }
+        }
+    }
+    
+    public String getName(){
+        return name;
+    }
+    
+    public int getScore(){
+        return score;
+    }
+    
+    public void incScore(int incr){
+        score = score + incr;
     }
 
     @Override
