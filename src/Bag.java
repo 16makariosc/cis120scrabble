@@ -35,6 +35,9 @@ public class Bag {
     }
 
     public Character getNextTile() {
+        if (bag.size() == 0){
+            return '0';
+        }
         int randNum = genRand.nextInt(bag.size());
         Character tile = bag.get(randNum);
         bag.remove(randNum);

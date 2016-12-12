@@ -28,10 +28,15 @@ public class Game implements Runnable {
     private Inventory inventoryPlayer2;
     private Inventory currentInventory;
     private JPanel cardFrame;
+    private JPanel instructionsCardFrame;
+    private JLabel instructions;
     private CardLayout cardLayout;
+    private CardLayout instructionsCardLayout;
 
     private JButton nextTurnButton;
     private JButton addToDictButton;
+    private JButton instructionButton;
+    private JButton backToPlayButton;
     private JLabel player1pts;
     private JLabel player2pts;
 
@@ -68,6 +73,7 @@ public class Game implements Runnable {
         info = new InfoPanel();
         nextTurnButton = new JButton("Next Turn");
         addToDictButton = new JButton("<html>Add Current Word<br />to Dictionary</html>");
+        instructionButton = new JButton("Instructions");
 
         try {
             bag = new Bag();
@@ -99,9 +105,21 @@ public class Game implements Runnable {
         final JFrame frame = new JFrame("Scrabble");
         frame.setLocation(300, 300);
 
+        cardFrame = new JPanel(new CardLayout());
+        instructionsCardFrame = new JPanel(new CardLayout());
+        instructions = new JLabel();
+        instructions.setText(
+                "<html>This is my implementation of Scrabble. <br />To play, first click the tile then click where it should go on the board.<br />"
+                        + "The point detection is a bit buggy but aside from that I think that's pretty cool.<br />"
+                        + "Additionally, the board can detect the word being made.</html>");
+        cardLayout = (CardLayout) cardFrame.getLayout();
+        instructionsCardLayout = (CardLayout) instructionsCardFrame.getLayout();
+
         // Main playing area
         board.addMouseListener(new BoardMouse());
-        frame.add(board, BorderLayout.CENTER);
+        frame.add(instructionsCardFrame, BorderLayout.CENTER);
+        instructionsCardFrame.add(board, "board");
+        instructionsCardFrame.add(instructions, "instructions");
 
         inventoryPlayer1 = new Inventory(bag, "Player 1");
         inventoryPlayer2 = new Inventory(bag, "Player 2");
@@ -110,8 +128,6 @@ public class Game implements Runnable {
         // the border is messed up and looks ugly I screwed up by not making
         // Square a jpanel
         // inventoryPlayer1.setBorder(BorderFactory.createTitledBorder("Inventory"));
-        cardFrame = new JPanel(new CardLayout());
-        cardLayout = (CardLayout) cardFrame.getLayout();
 
         cardFrame.add(inventoryPlayer1, "Player 1");
         cardFrame.add(inventoryPlayer2, "Player 2");
@@ -135,11 +151,18 @@ public class Game implements Runnable {
             }
         });
 
+        instructionButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                instructionsCardLayout.next(instructionsCardFrame);
+            }
+        });
+
         player1pts = new JLabel("Player 1: " + inventoryPlayer1.getScore());
         player2pts = new JLabel("Player 2: " + inventoryPlayer2.getScore());
 
         info.add(nextTurnButton);
         info.add(addToDictButton);
+        info.add(instructionButton);
         info.add(player1pts);
         info.add(player2pts);
         frame.add(info, BorderLayout.EAST);
@@ -161,6 +184,9 @@ public class Game implements Runnable {
             player1pts.setText("Player 1: " + inventoryPlayer1.getScore());
             player2pts.setText("Player 2: " + inventoryPlayer2.getScore());
             currentInventory.refillInventory(bag);
+            if(currentInventory.isOutOfTiles()){
+                info.add(new JLabel("Game Over!"));
+            }
             boardState.update(boardBuffer.endTurn());
             boardBuffer = new BoardBuffer(boardState.getBoardstate());
             cardLayout.next(cardFrame);

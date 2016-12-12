@@ -59,7 +59,7 @@ public class BoardBuffer {
 
     public boolean checkIfValidBoardState() {
 
-        if (posAreInLine()) {
+        if (isConstant(getXVals()) || isConstant(getYVals())) {
             for (Point pos : newPositions) {
                 if ((pos.x == 7 && pos.y == 7) || isTouchingValidTile(pos)) {
                     return true;
@@ -167,18 +167,6 @@ public class BoardBuffer {
 
             for (int x = minx + 1; board[x][y].getLetter() != null; x++) {
                 score += board[x][y].getPointVal();
-                if (board[x][y - 1].getLetter() != null || board[x][y + 1].getLetter() != null) {
-
-                    int miny = y;
-
-                    while (board[x][miny].getLetter() != null) {
-                        miny--;
-                    }
-
-                    for (int miny1 = miny + 1; board[x][miny1].getLetter() != null; miny1++) {
-                        score += board[x][miny1].getPointVal();
-                    }
-                }
             }
 
             return score;
@@ -193,18 +181,6 @@ public class BoardBuffer {
 
             for (int y = miny + 1; board[x][y].getLetter() != null; y++) {
                 score += board[x][y].getPointVal();
-                if (board[x - 1][y].getLetter() != null || board[x + 1][y].getLetter() != null) {
-
-                    int minx = x;
-
-                    while (board[minx][y].getLetter() != null) {
-                        minx--;
-                    }
-
-                    for (int minx1 = minx + 1; board[minx1][y].getLetter() != null; minx1++) {
-                        score += board[minx1][y].getPointVal();
-                    }
-                }
             }
 
             return score;

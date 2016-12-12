@@ -1,9 +1,9 @@
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Writer;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -11,7 +11,7 @@ public class Dictionary {
 
     private BufferedReader dictReader;
     private File dictionaryFile;
-    private Writer dictWriter;
+    private BufferedWriter dictWriter;
     private Set<String> dictionary = new HashSet<String>();
 
     public Dictionary() throws IOException {
@@ -23,7 +23,6 @@ public class Dictionary {
         }
 
         dictReader = new BufferedReader(new FileReader(dictionaryFile));
-        dictWriter = new FileWriter(dictionaryFile);
 
         try {
             word = dictReader.readLine();
@@ -40,10 +39,12 @@ public class Dictionary {
         String newWord = word.trim();
         dictionary.add(newWord);
         try {
-            dictWriter.write(newWord + '\n');
+            dictWriter = new BufferedWriter(new FileWriter(dictionaryFile, true));
+            dictWriter.write('\n' + newWord);
+            dictWriter.close();
         } catch (IOException e) {
             System.out.println("Error: Cannot write to dictionaryfile");
-        }
+        } 
     }
 
     public boolean isInDict(String word) {

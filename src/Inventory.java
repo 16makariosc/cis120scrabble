@@ -10,6 +10,7 @@ public class Inventory extends JPanel {
     private Square[] inventorygui = new Square[7];
     private int score = 0;
     private final String name;
+    private boolean outOfTiles = false;
 
     public Inventory(Bag bag, String name) {
 
@@ -48,6 +49,10 @@ public class Inventory extends JPanel {
         for (int i = 0; i < 7; i++) {
             if (inventory[i] == null) {
                 char c = bag.getNextTile();
+                if (c == '0'){
+                    outOfTiles = true;
+                    break;
+                }
                 addTile(new Tile(c, Game.charToPointMap.get(c)));
             }
         }
@@ -63,6 +68,10 @@ public class Inventory extends JPanel {
     
     public void incScore(int incr){
         score = score + incr;
+    }
+    
+    public boolean isOutOfTiles(){
+        return outOfTiles;
     }
 
     @Override
