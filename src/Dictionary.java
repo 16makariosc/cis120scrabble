@@ -35,20 +35,27 @@ public class Dictionary {
         }
     }
 
-    public void addWordToDict(String word) {
-        String newWord = word.trim();
-        dictionary.add(newWord);
-        try {
-            dictWriter = new BufferedWriter(new FileWriter(dictionaryFile, true));
-            dictWriter.write('\n' + newWord);
-            dictWriter.close();
-        } catch (IOException e) {
-            System.out.println("Error: Cannot write to dictionaryfile");
-        } 
+    public void addWordToDict(String[] words) {
+        for (String word : words) {
+            String newWord = word.trim();
+            dictionary.add(newWord);
+            try {
+                dictWriter = new BufferedWriter(new FileWriter(dictionaryFile, true));
+                dictWriter.write('\n' + newWord);
+                dictWriter.close();
+            } catch (IOException e) {
+                System.out.println("Error: Cannot write to dictionaryfile");
+            }
+        }
     }
 
-    public boolean isInDict(String word) {
-        return dictionary.contains(word);
+    public boolean isInDict(String[] words) {
+        for (String word : words) {
+            if (!dictionary.contains(word)) {
+                return false;
+            }
+        }
+        return true;
     }
 
 }

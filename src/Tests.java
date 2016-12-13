@@ -44,13 +44,11 @@ public class Tests {
         BoardBuffer bb = new BoardBuffer(bs.getBoardstate());
 
         bb.addLetter(new Tile('a', 1), new Point(7, 7));
-        assertEquals("a", bb.currentWord());
         bb.addLetter(new Tile('b', 1), new Point(6, 7));
-        assertEquals("ba", bb.currentWord());
+        assertEquals("ba", bb.currentWords()[0]);
         bb.addLetter(new Tile('d', 1), new Point(8, 7));
-        assertEquals("bad", bb.currentWord());
+        assertEquals("bad", bb.currentWords()[0]);
         bb.addLetter(new Tile('s', 1), new Point(9, 9));
-        assertEquals("", bb.currentWord());
 
     }
 
@@ -58,18 +56,18 @@ public class Tests {
     public void testDictionary() {
         try {
             Dictionary d = new Dictionary();
-            d.addWordToDict("string");
-            d.addWordToDict("clay");
-            assertTrue(d.isInDict("string"));
-            assertTrue(d.isInDict("clay"));
+            d.addWordToDict(new String[] { "string" });
+            d.addWordToDict(new String[] { "clay" });
+            assertTrue(d.isInDict(new String[] { "string" }));
+            assertTrue(d.isInDict(new String[] { "clay" }));
         } catch (IOException ioe) {
             System.out.println("Could not create Dictionary");
         }
 
         try {
             Dictionary d1 = new Dictionary();
-            assertTrue(d1.isInDict("string"));
-            assertTrue(d1.isInDict("clay"));
+            assertTrue(d1.isInDict(new String[] { "string" }));
+            assertTrue(d1.isInDict(new String[] { "clay" }));
         } catch (IOException ioe) {
             System.out.println("Could not create Dictionary");
         }

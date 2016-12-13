@@ -24,36 +24,109 @@ public class BoardBuffer {
 
     public boolean isValidWord(Set<String> dict) { // spellchecker
 
-        if (dict.contains(currentWord())) {
+        if (dict.contains(currentWords())) {
             return true;
         }
         return false;
 
     }
 
-    public String currentWord() {
+    public String[] currentWords() {
 
         String word = "";
+        ArrayList<String> words = new ArrayList<String>();
 
-        if (isConstant(getYVals())) {
-            int y = getYVals().get(0);
-            for (int x = Collections.min(getXVals()); board[x][y].getLetter() != null; x++) {
-                word += board[x][y].getLetter();
-            }
-
-            return word;
-        }
-        if (isConstant(getXVals())) {
+        if (newPositions.size() == 1) {
             int x = getXVals().get(0);
-            for (int y = Collections.min(getYVals()); board[x][y].getLetter() != null; y++) {
-                word += board[x][y].getLetter();
+            int y = getYVals().get(0);
+            if (board[x][y - 1].getLetter() != null || board[x][y + 1].getLetter() != null) {
+                int miny = y;
+                while (board[x][miny - 1].getLetter() != null) {
+                    miny--;
+                }
+                while (board[x][miny].getLetter() != null) {
+                    word += board[x][miny].getLetter();
+                    miny++;
+                }
+                words.add(word);
+                word = "";
             }
-            // for (int y : getYVals()) {
-            // word += board[x][y].getLetter();
-            // }
-            return word;
+
+            if (board[x + 1][y].getLetter() != null || board[x - 1][y].getLetter() != null) {
+                int minx = x;
+                while (board[minx - 1][y].getLetter() != null) {
+                    minx--;
+                }
+                while (board[minx][y].getLetter() != null) {
+                    word += board[minx][y].getLetter();
+                    minx++;
+                }
+                words.add(word);
+                word = "";
+            }
+        } else if (isConstant(getYVals())) {
+
+            int y = getYVals().get(0);
+            int minx = Collections.min(getXVals());
+
+            while (board[minx - 1][y].getLetter() != null) {
+                minx--;
+            }
+
+            String mainWord = "";
+
+            while (board[minx][y].getLetter() != null) {
+                mainWord += board[minx][y].getLetter();
+                if ((board[minx][y - 1].getLetter() != null
+                        || board[minx][y + 1].getLetter() != null) && getXVals().contains(minx)) {
+                    int miny = y;
+                    while (board[minx][miny - 1].getLetter() != null) {
+                        miny--;
+                    }
+                    String branchWord = "";
+                    while (board[minx][miny].getLetter() != null) {
+                        branchWord += board[minx][miny].getLetter();
+                        miny++;
+                    }
+                    words.add(branchWord);
+                }
+                minx++;
+            }
+            words.add(mainWord);
+            mainWord = "";
+
+        } else if (isConstant(getXVals())) {
+            int x = getXVals().get(0);
+            int miny = Collections.min(getYVals());
+
+            while (board[x][miny - 1].getLetter() != null) {
+                miny--;
+            }
+            
+            String mainWord = "";
+
+            while (board[x][miny].getLetter() != null) {
+                mainWord += board[x][miny].getLetter();
+                if ((board[x - 1][miny].getLetter() != null
+                        || board[x + 1][miny].getLetter() != null) && getYVals().contains(miny)) {
+                    int minx = x;
+                    while (board[minx - 1][miny].getLetter() != null) {
+                        minx--;
+                    }
+                    String branchWord = "";
+                    while (board[minx][miny].getLetter() != null) {
+                        branchWord += board[minx][miny].getLetter();
+                        minx++;
+                    }
+                    words.add(branchWord);
+                }
+                miny++;
+            }
+            words.add(mainWord);
+            word = "";
         }
-        return word;
+
+        return words.toArray(new String[words.size()]);
 
     }
 
@@ -206,10 +279,6 @@ public class BoardBuffer {
                 minx++;
             }
 
-            for (int x = minx; board[x][y].getLetter() != null; x++) {
-                score += board[x][y].getPointVal();
-            }
-
         } else if (isConstant(getXVals())) {
             int x = getXVals().get(0);
             int miny = Collections.min(getYVals());
@@ -220,7 +289,8 @@ public class BoardBuffer {
 
             while (board[x][miny].getLetter() != null) {
                 score += board[x][miny].getPointVal();
-                if ((board[x - 1][miny].getLetter() != null || board[x + 1][miny].getLetter() != null) && getYVals().contains(miny)) {
+                if ((board[x - 1][miny].getLetter() != null
+                        || board[x + 1][miny].getLetter() != null) && getYVals().contains(miny)) {
                     int minx = x;
                     while (board[minx - 1][miny].getLetter() != null) {
                         minx--;
@@ -233,9 +303,6 @@ public class BoardBuffer {
                 miny++;
             }
 
-            for (int y = miny; board[x][y].getLetter() != null; y++) {
-                score += board[x][y].getPointVal();
-            }
         }
         return score;
     }

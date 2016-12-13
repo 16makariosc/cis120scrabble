@@ -147,7 +147,7 @@ public class Game implements Runnable {
 
         addToDictButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                dict.addWordToDict(boardBuffer.currentWord());
+                dict.addWordToDict(boardBuffer.currentWords());
             }
         });
 
@@ -179,12 +179,12 @@ public class Game implements Runnable {
     }
 
     private void endTurn(Inventory inv) {
-        if (boardBuffer.checkIfValidBoardState() && dict.isInDict(boardBuffer.currentWord())) {
+        if (boardBuffer.checkIfValidBoardState() && dict.isInDict(boardBuffer.currentWords())) {
             currentInventory.incScore(boardBuffer.getScoreOnBoard());
             player1pts.setText("Player 1: " + inventoryPlayer1.getScore());
             player2pts.setText("Player 2: " + inventoryPlayer2.getScore());
             currentInventory.refillInventory(bag);
-            if(currentInventory.isOutOfTiles()){
+            if (currentInventory.isOutOfTiles()) {
                 info.add(new JLabel("Game Over!"));
             }
             boardState.update(boardBuffer.endTurn());
@@ -241,12 +241,14 @@ public class Game implements Runnable {
                         && !boardBuffer.getBoardState()[p.x][p.y].isFixed()) {
                     removeTileFromBoard(p, currentInventory);
                     System.out.println("Validboardstate: " + boardBuffer.checkIfValidBoardState());
-                    System.out.println("Current Word: " + boardBuffer.currentWord());
+                    for (String word : boardBuffer.currentWords()) {
+                        System.out.println("Current Word: " + word);
+                    }
                     System.out.println(boardBuffer.getXVals());
                     System.out.println(boardBuffer.getYVals());
                 }
                 System.out.println("Validboardstate: " + boardBuffer.checkIfValidBoardState());
-                System.out.println("Current Word: " + boardBuffer.currentWord());
+                System.out.println("Current Word: " + boardBuffer.currentWords());
                 System.out.println(boardBuffer.getXVals());
                 System.out.println(boardBuffer.getYVals());
                 System.out.println("Score: " + boardBuffer.getScoreOnBoard());
@@ -260,7 +262,9 @@ public class Game implements Runnable {
                     mode = Mode.DEFAULT;
                 }
                 System.out.println("Validboardstate: " + boardBuffer.checkIfValidBoardState());
-                System.out.println("Current Word: " + boardBuffer.currentWord());
+                for (String word : boardBuffer.currentWords()) {
+                    System.out.println("Current Word: " + word);
+                }
                 System.out.println("Score: " + boardBuffer.getScoreOnBoard());
                 System.out.println("Clicked square at (" + p.x + "," + p.y + ")");
                 break;
