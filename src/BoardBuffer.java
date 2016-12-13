@@ -156,34 +156,86 @@ public class BoardBuffer {
     public int getScoreOnBoard() {
         int score = 0;
 
-        if (isConstant(getYVals())) {
+        if (newPositions.size() == 1) {
+            int x = getXVals().get(0);
+            int y = getYVals().get(0);
+            if (board[x][y - 1].getLetter() != null || board[x][y + 1].getLetter() != null) {
+                int miny = y;
+                while (board[x][miny - 1].getLetter() != null) {
+                    miny--;
+                }
+                while (board[x][miny].getLetter() != null) {
+                    score += board[x][miny].getPointVal();
+                    miny++;
+                }
+            }
+
+            if (board[x + 1][y].getLetter() != null || board[x - 1][y].getLetter() != null) {
+                int minx = x;
+                while (board[minx - 1][y].getLetter() != null) {
+                    minx--;
+                }
+                while (board[minx][y].getLetter() != null) {
+                    score += board[minx][y].getPointVal();
+                    minx++;
+                }
+            }
+
+        } else if (isConstant(getYVals())) {
 
             int y = getYVals().get(0);
             int minx = Collections.min(getXVals());
 
-            while (board[minx][y].getLetter() != null) {
+            while (board[minx - 1][y].getLetter() != null) {
                 minx--;
             }
 
-            for (int x = minx + 1; board[x][y].getLetter() != null; x++) {
-                score += board[x][y].getPointVal();
+            while (board[minx][y].getLetter() != null) {
+                score += board[minx][y].getPointVal();
+                if ((board[minx][y - 1].getLetter() != null
+                        || board[minx][y + 1].getLetter() != null) && getXVals().contains(minx)) {
+                    int miny = y;
+                    while (board[minx][miny - 1].getLetter() != null) {
+                        miny--;
+                    }
+                    while (board[minx][miny].getLetter() != null) {
+                        score += board[minx][miny].getPointVal();
+                        miny++;
+                    }
+                }
+                minx++;
             }
 
-            return score;
+            for (int x = minx; board[x][y].getLetter() != null; x++) {
+                score += board[x][y].getPointVal();
+            }
 
         } else if (isConstant(getXVals())) {
             int x = getXVals().get(0);
             int miny = Collections.min(getYVals());
 
-            while (board[x][miny].getLetter() != null) {
+            while (board[x][miny - 1].getLetter() != null) {
                 miny--;
             }
 
-            for (int y = miny + 1; board[x][y].getLetter() != null; y++) {
-                score += board[x][y].getPointVal();
+            while (board[x][miny].getLetter() != null) {
+                score += board[x][miny].getPointVal();
+                if ((board[x - 1][miny].getLetter() != null || board[x + 1][miny].getLetter() != null) && getYVals().contains(miny)) {
+                    int minx = x;
+                    while (board[minx - 1][miny].getLetter() != null) {
+                        minx--;
+                    }
+                    while (board[minx][miny].getLetter() != null) {
+                        score += board[minx][miny].getPointVal();
+                        minx++;
+                    }
+                }
+                miny++;
             }
 
-            return score;
+            for (int y = miny; board[x][y].getLetter() != null; y++) {
+                score += board[x][y].getPointVal();
+            }
         }
         return score;
     }
